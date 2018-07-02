@@ -16,40 +16,76 @@ namespace Com_port
     {
         private delegate void InvokeDelegate();
         System.Timers.Timer aTimer;
-        String S = ""; 
-
+        String S = "";
+        double Max_voltage = 1.4;
+        double current_inp = 0;
+        Graphics g;
+        Bitmap b;
         public Form1()
         {
+            label2.Text = PortEr._port_finded;//выводим номер порта
             InitializeComponent();
-           
+            
+            b = new Bitmap(pictureBox1.Width, pictureBox1.Height);//сразу объявим картинку как графику ,чтобы упростить с ней взаимодействие
+            g = Graphics.FromImage(b);
         }
 
-        private void tbAux_SelectionChanged(object sender, EventArgs e)
+        private void tbAux_SelectionChanged(object sender, EventArgs e)//метод для объединения потоков(пока хз насколько в таком виде это заработает, но я думаю все будет более-менее)
         {
             BeginInvoke(new InvokeDelegate(updateImageBox));
         }
 
-
-
-
         void Main()
         {
-            aTimer = new System.Timers.Timer(1000);
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.AutoReset = true;
+            aTimer = new System.Timers.Timer(1000);//тут у нас второй таймер, достаточно медленный(1 сек), чтобы не задушить порт. Опять же хз насколько быстро нужно считывать с буфера FIFO порта
+            aTimer.Elapsed += OnTimedEvent;//вызываем событие по "прерыванию"
+            aTimer.AutoReset = true;//авторестарт
             aTimer.Enabled = true;
 
         }
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e)
+        private void OnTimedEvent(object sender, ElapsedEventArgs e)//Само событие просто считывает значение переменной, которая была забита из класса управления портом - синглтоном
         {
             S = PortEr.strFromPort;
+
             throw new NotImplementedException();
         }
 
         private void updateImageBox( )
         {
+            try
+            {
+                current_inp = Convert.ToDouble(S);
+                Drawer_my(current_inp, Max_voltage); 
+            }
+            catch { }
+
             textBox1.Text = S;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Max_voltage = Convert.ToDouble(textBox1.Text);//считываем опорное напряжение
+        }
+
+        //
+        //Функция отрисовки. каждую итерацию смещает все изображение на один писель влево и записывает новое значение  
+        //в правую часть. Принимает на вход две переменных - полученное значение с АЦП МК и заданное пользователем или дефолтное опорное наряжение
+        private void Drawer_my(double r, double v)
+        {
+            double t_inp;
+
+
+            //приводим к текушей канве
+            t_inp = r / v;
+            t_inp *= b.Height;
+            t_inp = Math.Round(t_inp);
+
+
+        }
+
+
+
+
     }
 }

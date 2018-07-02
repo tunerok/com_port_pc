@@ -30,12 +30,17 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.перезагрузитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.соединениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.графикToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.оПрограммеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.помощьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.перезагрузитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -47,11 +52,6 @@
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.оПрограммеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.помощьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.соединениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.графикToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
@@ -78,6 +78,47 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(53, 20);
             this.toolStripMenuItem1.Text = "Меню";
+            // 
+            // перезагрузитьToolStripMenuItem
+            // 
+            this.перезагрузитьToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.соединениеToolStripMenuItem,
+            this.графикToolStripMenuItem});
+            this.перезагрузитьToolStripMenuItem.Name = "перезагрузитьToolStripMenuItem";
+            this.перезагрузитьToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.перезагрузитьToolStripMenuItem.Text = "Перезагрузить";
+            // 
+            // соединениеToolStripMenuItem
+            // 
+            this.соединениеToolStripMenuItem.Name = "соединениеToolStripMenuItem";
+            this.соединениеToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.соединениеToolStripMenuItem.Text = "Соединение";
+            // 
+            // графикToolStripMenuItem
+            // 
+            this.графикToolStripMenuItem.Name = "графикToolStripMenuItem";
+            this.графикToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.графикToolStripMenuItem.Text = "График";
+            // 
+            // выходToolStripMenuItem
+            // 
+            this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
+            this.выходToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.выходToolStripMenuItem.Text = "Выход";
+            // 
+            // оПрограммеToolStripMenuItem
+            // 
+            this.оПрограммеToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.помощьToolStripMenuItem});
+            this.оПрограммеToolStripMenuItem.Name = "оПрограммеToolStripMenuItem";
+            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(94, 20);
+            this.оПрограммеToolStripMenuItem.Text = "О программе";
+            // 
+            // помощьToolStripMenuItem
+            // 
+            this.помощьToolStripMenuItem.Name = "помощьToolStripMenuItem";
+            this.помощьToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.помощьToolStripMenuItem.Text = "Помощь";
             // 
             // label1
             // 
@@ -128,15 +169,6 @@
             this.checkBox3.Text = "Минимум";
             this.checkBox3.UseVisualStyleBackColor = true;
             // 
-            // перезагрузитьToolStripMenuItem
-            // 
-            this.перезагрузитьToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.соединениеToolStripMenuItem,
-            this.графикToolStripMenuItem});
-            this.перезагрузитьToolStripMenuItem.Name = "перезагрузитьToolStripMenuItem";
-            this.перезагрузитьToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.перезагрузитьToolStripMenuItem.Text = "Перезагрузить";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -153,7 +185,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(22, 13);
             this.label4.TabIndex = 8;
-            this.label4.Text = "1,4";
+            this.label4.Text = "1.4";
             // 
             // textBox1
             // 
@@ -161,7 +193,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(57, 20);
             this.textBox1.TabIndex = 9;
-            this.textBox1.Text = "1,4";
+            this.textBox1.Text = "1.4";
             // 
             // button1
             // 
@@ -171,6 +203,7 @@
             this.button1.TabIndex = 10;
             this.button1.Text = "Изменить";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label5
             // 
@@ -249,38 +282,6 @@
             this.pictureBox1.Size = new System.Drawing.Size(614, 242);
             this.pictureBox1.TabIndex = 17;
             this.pictureBox1.TabStop = false;
-            // 
-            // оПрограммеToolStripMenuItem
-            // 
-            this.оПрограммеToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.помощьToolStripMenuItem});
-            this.оПрограммеToolStripMenuItem.Name = "оПрограммеToolStripMenuItem";
-            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(94, 20);
-            this.оПрограммеToolStripMenuItem.Text = "О программе";
-            // 
-            // помощьToolStripMenuItem
-            // 
-            this.помощьToolStripMenuItem.Name = "помощьToolStripMenuItem";
-            this.помощьToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.помощьToolStripMenuItem.Text = "Помощь";
-            // 
-            // соединениеToolStripMenuItem
-            // 
-            this.соединениеToolStripMenuItem.Name = "соединениеToolStripMenuItem";
-            this.соединениеToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.соединениеToolStripMenuItem.Text = "Соединение";
-            // 
-            // графикToolStripMenuItem
-            // 
-            this.графикToolStripMenuItem.Name = "графикToolStripMenuItem";
-            this.графикToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.графикToolStripMenuItem.Text = "График";
-            // 
-            // выходToolStripMenuItem
-            // 
-            this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.выходToolStripMenuItem.Text = "Выход";
             // 
             // button2
             // 

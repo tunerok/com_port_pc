@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define  6
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,11 +36,11 @@ namespace Com_port
             MkPortFound = false;
             try
             {
-                foreach (string port in ports)
+                foreach (string port in ports)//просматриваем все порты
                 {
 
-                    _currentPort = new SerialPort(port, 9600);
-                    if (MkDetected())
+                    _currentPort = new SerialPort(port, 9600);//каждый открываем
+                    if (MkDetected())// и слушаем
                     {
                         MkPortFound = true;
                         _port_finded = port;
@@ -81,6 +83,8 @@ namespace Com_port
         private static void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
 
+
+
             if (!_currentPort.IsOpen) return;
             try // так как после закрытия окна таймер еще может выполнится или предел ожидания может быть превышен
             {
@@ -88,15 +92,11 @@ namespace Com_port
                 _currentPort.DiscardInBuffer();
                 // считаем последнее значение 
                 strFromPort = _currentPort.ReadLine();
+
             }
             catch { }
         }
-
         
-
-    
-
-
 
         private static void Get_ports()
         {
@@ -120,25 +120,30 @@ namespace Com_port
                 // небольшая пауза, ведь SerialPort не терпит суеты
 
                 string returnMessage = _currentPort.ReadLine();
-                _currentPort.Close();
+                
 
                 // необходимо чтобы void loop() в скетче содержал код c ID;
                 if (returnMessage.Contains(_ID_mk))
                 {
+                    _currentPort.Write("PASS");
+                    _currentPort.Close();
                     return true;
+
                 }
                 else
                 {
+                    _currentPort.Close();
                     return false;
                 }
             }
             catch (Exception e)
             {
+                _currentPort.Close();
                 return false;
             }
         }
 
-        public static PortEr getInstance(string name)
+        public static PortEr getInstance(string name)//функция, необходимая, чтобы не породилось несколько экземпляров данного класса
         {
             if (instance == null)
             {
