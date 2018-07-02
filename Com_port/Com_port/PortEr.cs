@@ -80,6 +80,7 @@ namespace Com_port
 
         private static void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
+
             if (!_currentPort.IsOpen) return;
             try // так как после закрытия окна таймер еще может выполнится или предел ожидания может быть превышен
             {
