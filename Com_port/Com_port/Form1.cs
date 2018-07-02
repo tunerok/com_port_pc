@@ -15,6 +15,7 @@ namespace Com_port
         public Form1()
         {
             InitializeComponent();
+           
         }
 
 
