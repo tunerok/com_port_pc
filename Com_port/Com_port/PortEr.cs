@@ -1,4 +1,4 @@
-﻿#define  6
+﻿
 
 using System;
 using System.Collections.Generic;
@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.IO.Ports;
 
+
+
 namespace Com_port
 {
+
     public sealed class PortEr
     {
         private static volatile PortEr instance;
@@ -91,7 +94,12 @@ namespace Com_port
                 // удалим накопившееся в буфере
                 _currentPort.DiscardInBuffer();
                 // считаем последнее значение 
-                strFromPort = _currentPort.ReadLine();
+
+                string strFromPort_temp = _currentPort.ReadLine();
+                if ((!strFromPort_temp.Contains("E")) || (!strFromPort_temp.Contains(_ID_mk)))
+                {
+                    strFromPort = strFromPort_temp;
+                }
 
             }
             catch { }
@@ -125,7 +133,7 @@ namespace Com_port
                 // необходимо чтобы void loop() в скетче содержал код c ID;
                 if (returnMessage.Contains(_ID_mk))
                 {
-                    _currentPort.Write("PASS");
+                    _currentPort.Write(_ID_mk);
                     _currentPort.Close();
                     return true;
 
@@ -167,6 +175,29 @@ namespace Com_port
             aTimer.Enabled = false;
             _currentPort.Close();
         }
+
+         
+
+    public static bool Check_connection()
+        {
+            _currentPort.Write("C");
+            System.Threading.Thread.Sleep(500);
+            string returnMessage = _currentPort.ReadLine();
+
+            if (returnMessage.Contains("E"))
+            {
+                _currentPort.Write("R");
+                _currentPort.Close();
+                return true;
+
+            }
+            else
+            {
+                _currentPort.Close();
+                return false;
+            }
+        }
+
 
 
 

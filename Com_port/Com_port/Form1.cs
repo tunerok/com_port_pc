@@ -21,11 +21,13 @@ namespace Com_port
         double current_inp = 0;
         Graphics g;
         Bitmap b;
+        int conn_counter = 0;
+        bool connect;
         public Form1()
         {
             label2.Text = PortEr._port_finded;//выводим номер порта
             InitializeComponent();
-            
+            connect = PortEr.Check_connection();
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);//сразу объявим картинку как графику ,чтобы упростить с ней взаимодействие
             g = Graphics.FromImage(b);
         }
@@ -46,7 +48,28 @@ namespace Com_port
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)//Само событие просто считывает значение переменной, которая была забита из класса управления портом - синглтоном
         {
-            S = PortEr.strFromPort;
+
+            conn_counter = conn_counter + 1;
+            if (conn_counter > 300)
+            {
+                connect = PortEr.Check_connection();
+                conn_counter = 0;
+            }
+
+            if (connect)
+            {
+                S = PortEr.strFromPort;
+                button4.Enabled = false;
+                label6.Text = PortEr._port_finded;
+            }
+            else
+            {
+                label6.Text = "Не найдено";
+                button4.Enabled = true;
+
+            }
+            
+
 
             throw new NotImplementedException();
         }
@@ -84,8 +107,30 @@ namespace Com_port
 
         }
 
+        private void button4_Click(object sender, EventArgs e)
+        {
+            try
+            {
 
+                PortEr.Ini();
+                PortEr.Find_port(ID_mk);
 
+            }
+            catch { }
 
+            if (PortEr.MkPortFound == false)
+            {
+                label6.Text = "Не найдено";
+                return;
+            }
+            else
+            {
+
+            }
     }
-}
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            aTimer.
+        }
+    }
