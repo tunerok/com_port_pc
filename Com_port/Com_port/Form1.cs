@@ -23,6 +23,7 @@ namespace Com_port
         Bitmap b;
         int conn_counter = 0;
         bool connect;
+        bool paused = false;
         public Form1()
         {
             label2.Text = PortEr._port_finded;//выводим номер порта
@@ -30,11 +31,13 @@ namespace Com_port
             connect = PortEr.Check_connection();
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);//сразу объявим картинку как графику ,чтобы упростить с ней взаимодействие
             g = Graphics.FromImage(b);
+
         }
 
         private void tbAux_SelectionChanged(object sender, EventArgs e)//метод для объединения потоков(пока хз насколько в таком виде это заработает, но я думаю все будет более-менее)
         {
             BeginInvoke(new InvokeDelegate(updateImageBox));
+            Main();
         }
 
         void Main()
@@ -91,6 +94,12 @@ namespace Com_port
             Max_voltage = Convert.ToDouble(textBox1.Text);//считываем опорное напряжение
         }
 
+
+        private void Drawer_ini()
+        {
+
+        }
+
         //
         //Функция отрисовки. каждую итерацию смещает все изображение на один писель влево и записывает новое значение  
         //в правую часть. Принимает на вход две переменных - полученное значение с АЦП МК и заданное пользователем или дефолтное опорное наряжение
@@ -104,6 +113,13 @@ namespace Com_port
             t_inp *= b.Height;
             t_inp = Math.Round(t_inp);
 
+            PointF [] points = new PointF[150]; 
+            //сюда запилисть фор
+
+
+            g.DrawCurve();
+
+            pictureBox1.Image = (Image)b;
 
         }
 
@@ -111,7 +127,7 @@ namespace Com_port
         {
             try
             {
-
+                string ID_mk = textBox2.Text;
                 PortEr.Ini();
                 PortEr.Find_port(ID_mk);
 
@@ -131,6 +147,15 @@ namespace Com_port
 
         private void button2_Click(object sender, EventArgs e)
         {
-            aTimer.
+            if (!paused)
+            {
+                aTimer.Enabled = false;
+                button2.Text = "Продолжить";
+            }
+            else
+            {
+                aTimer.Enabled = true;
+                button2.Text = "Пауза";
+            }
         }
     }
