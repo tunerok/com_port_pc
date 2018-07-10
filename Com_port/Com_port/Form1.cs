@@ -12,10 +12,11 @@ using System.Threading;
 
 namespace Com_port
 {
-    public partial  class Form1 : Form
+    public partial class Form1 : Form
     {
         private delegate void InvokeDelegate();
         System.Timers.Timer aTimer;
+        PointF[] points = new PointF[150];
         String S = "";
         double Max_voltage = 1.4;
         double current_inp = 0;
@@ -24,6 +25,7 @@ namespace Com_port
         int conn_counter = 0;
         bool connect;
         bool paused = false;
+        Pen pen = new Pen(Color.Green);
         public Form1()
         {
             label2.Text = PortEr._port_finded;//выводим номер порта
@@ -31,6 +33,11 @@ namespace Com_port
             connect = PortEr.Check_connection();
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);//сразу объявим картинку как графику ,чтобы упростить с ней взаимодействие
             g = Graphics.FromImage(b);
+            for (int i = 0; i < 150; i++)
+            {//инициализируем нужные нам точки 
+                points[i].X = i + 1;
+                points[i].Y = 0;
+            }
 
         }
 
@@ -71,18 +78,18 @@ namespace Com_port
                 button4.Enabled = true;
 
             }
-            
+
 
 
             throw new NotImplementedException();
         }
 
-        private void updateImageBox( )
+        private void updateImageBox()
         {
             try
             {
                 current_inp = Convert.ToDouble(S);
-                Drawer_my(current_inp, Max_voltage); 
+                Drawer_my(current_inp, Max_voltage);
             }
             catch { }
 
@@ -106,20 +113,26 @@ namespace Com_port
         private void Drawer_my(double r, double v)
         {
             double t_inp;
-
+            int i = 0;
 
             //приводим к текушей канве
             t_inp = r / v;
             t_inp *= b.Height;
             t_inp = Math.Round(t_inp);
 
-            PointF [] points = new PointF[150]; 
-            //сюда запилисть фор
 
 
-            g.DrawCurve();
+            for (; i < 149; i++)//перебираем все элементы, кроме самого последнего 
+                points[i].Y = points[i + 1].Y; // оперируем только  с элементами оординат, т.к. абсцисса "виртуальная и не едет"
+
+            points[150].Y = (float)t_inp;
+
+
+            g.DrawCurve(pen, points);
+
 
             pictureBox1.Image = (Image)b;
+            pictureBox1.Update();
 
         }
 
@@ -143,7 +156,7 @@ namespace Com_port
             {
 
             }
-    }
+        }
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -159,3 +172,4 @@ namespace Com_port
             }
         }
     }
+}
