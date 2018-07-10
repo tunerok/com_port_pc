@@ -132,8 +132,8 @@ namespace Com_port
 
 
             pictureBox1.Image = (Image)b;
-            pictureBox1.Update();
-
+            pictureBox1.Refresh();
+			//pictureBox1.Update();//выбрать между функциями
         }
 
         private void button4_Click(object sender, EventArgs e)
