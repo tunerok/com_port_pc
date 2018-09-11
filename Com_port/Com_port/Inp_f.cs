@@ -33,20 +33,25 @@ namespace Com_port
 
                 PortEr.Ini();
                 PortEr.Find_port(ID_mk);
+                textBox1.Text = PortEr.strFromPort;
 
             }
             catch { }
 
             if (PortEr.MkPortFound == false)
             {
-                textBox1.Text = "Не найдено";
+                // textBox1.Text = "Не найдено";
+                
                 return;
             }
             else
             {
-
-                Application.Run(new Form1());
-                this.Close();
+                this.Hide();
+                Form1 frm1 = new Form1();
+                frm1.ShowDialog();
+                
+               // Application.Run(new Form1());
+                
             }
 
         }

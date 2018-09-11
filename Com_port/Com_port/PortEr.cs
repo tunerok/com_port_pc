@@ -34,16 +34,21 @@ namespace Com_port
 
 
 
-        public static void Find_port(string _ID_mk)
+        public static void Find_port(string ID_mk)
         {
+            _ID_mk = ID_mk;
             MkPortFound = false;
+            
             try
             {
                 foreach (string port in ports)//просматриваем все порты
                 {
-
+                    
                     _currentPort = new SerialPort(port, 9600);//каждый открываем
-                    if (MkDetected())// и слушаем
+                    _currentPort.DtrEnable = true;
+                    _currentPort.ReadTimeout = 2000;
+                    bool det = MkDetected();
+                    if (det)// и слушаем
                     {
                         MkPortFound = true;
                         _port_finded = port;
@@ -66,7 +71,7 @@ namespace Com_port
         {
             _currentPort.BaudRate = 9600;
             _currentPort.DtrEnable = true;
-            _currentPort.ReadTimeout = 1000;
+            _currentPort.ReadTimeout = 2000;
 
             try
             {
@@ -75,7 +80,7 @@ namespace Com_port
             catch { }
 
 
-            aTimer = new System.Timers.Timer(1000);
+            aTimer = new System.Timers.Timer(200);
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
@@ -124,16 +129,20 @@ namespace Com_port
             try
             {
                 _currentPort.Open();
-                System.Threading.Thread.Sleep(1000);
+
+              // Run_port();
+                System.Threading.Thread.Sleep(500);
                 // небольшая пауза, ведь SerialPort не терпит суеты
-
+                _currentPort.DiscardInBuffer();
+                _currentPort.Write(_ID_mk);
+                System.Threading.Thread.Sleep(200);
                 string returnMessage = _currentPort.ReadLine();
+                strFromPort = returnMessage;
                 
-
                 // необходимо чтобы void loop() в скетче содержал код c ID;
                 if (returnMessage.Contains(_ID_mk))
                 {
-                    _currentPort.Write(_ID_mk);
+                    
                     _currentPort.Close();
                     return true;
 
@@ -178,25 +187,26 @@ namespace Com_port
 
          
 
-    public static bool Check_connection()
-        {
-            _currentPort.Write("C");
-            System.Threading.Thread.Sleep(500);
-            string returnMessage = _currentPort.ReadLine();
+    //public static bool Check_connection()
+    //    {
+    //        _currentPort.DiscardInBuffer();
+    //        _currentPort.Write("S");
+    //        System.Threading.Thread.Sleep(100);
+    //        string returnMessage = _currentPort.ReadLine();
 
-            if (returnMessage.Contains("E"))
-            {
-                _currentPort.Write("R");
-                _currentPort.Close();
-                return true;
+    //        if (returnMessage.Contains("E"))
+    //        {
+    //           // _currentPort.Write("R");
+    //           // _currentPort.Close();
+    //            return true;
 
-            }
-            else
-            {
-                _currentPort.Close();
-                return false;
-            }
-        }
+    //        }
+    //        else
+    //        {
+    //            _currentPort.Close();
+    //            return false;
+    //        }
+    //    }
 
 
 
