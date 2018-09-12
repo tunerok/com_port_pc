@@ -7,8 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.IO.Ports;
-
-
+using System.Windows.Forms;
+using System.Threading;
 
 namespace Com_port
 {
@@ -20,10 +20,10 @@ namespace Com_port
         public static SerialPort _currentPort;
         public static String _ID_mk, _port_finded, strFromPort;
         public static bool MkPortFound;
-        private static string[] ports;
-        public static Timer aTimer;
-
-
+        public static string[] ports;
+        public static System.Timers.Timer aTimer;
+        private static Thread readThread = new Thread(Read);
+        public static int check_current_port;
         private PortEr() { }
 
         public static void Ini()
@@ -32,21 +32,41 @@ namespace Com_port
             Get_ports();
         }
 
+        public static void Close_port()
+        {
+            try
+            {
+                readThread.Join(500);
+               // readThread.Interrupt();
+               
+                _currentPort.DiscardInBuffer();
+                _currentPort.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
 
 
         public static void Find_port(string ID_mk)
         {
             _ID_mk = ID_mk;
             MkPortFound = false;
-            
+            check_current_port = 0;
+
+
             try
             {
                 foreach (string port in ports)//просматриваем все порты
                 {
                     
+                    check_current_port++;
                     _currentPort = new SerialPort(port, 9600);//каждый открываем
                     _currentPort.DtrEnable = true;
                     _currentPort.ReadTimeout = 2000;
+                    _currentPort.WriteTimeout = 500;
                     bool det = MkDetected();
                     if (det)// и слушаем
                     {
@@ -63,7 +83,10 @@ namespace Com_port
                 }
             }
 
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
 
@@ -77,37 +100,59 @@ namespace Com_port
             {
                 _currentPort.Open();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
 
 
-            aTimer = new System.Timers.Timer(200);
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.AutoReset = true;
-            aTimer.Enabled = true;
+            //aTimer = new System.Timers.Timer(200);
+            //aTimer.Elapsed += OnTimedEvent;
+            //aTimer.AutoReset = true;
+            //aTimer.Enabled = true;
+            _currentPort.DiscardInBuffer();
+            readThread.Start();
 
 
         }
 
-        private static void OnTimedEvent(object sender, ElapsedEventArgs e)
+       
+
+
+
+        //private static void OnTimedEvent(object sender, ElapsedEventArgs e)
+        public static void Read()
         {
 
-
-
-            if (!_currentPort.IsOpen) return;
-            try // так как после закрытия окна таймер еще может выполнится или предел ожидания может быть превышен
+            
+            while (_currentPort.IsOpen)
             {
-                // удалим накопившееся в буфере
-                _currentPort.DiscardInBuffer();
-                // считаем последнее значение 
 
-                string strFromPort_temp = _currentPort.ReadLine();
-                if ((!strFromPort_temp.Contains("E")) || (!strFromPort_temp.Contains(_ID_mk)))
+                try // так как после закрытия окна таймер еще может выполнится или предел ожидания может быть превышен
                 {
-                    strFromPort = strFromPort_temp;
-                }
+                    // удалим накопившееся в буфере
+                    //_currentPort.DiscardInBuffer();
 
+                    // считаем последнее значение 
+                    //if (_currentPort.BytesToRead > 0)
+                    //{
+                    if (_currentPort.IsOpen)
+                    {
+                        string strFromPort_temp = _currentPort.ReadLine();
+                        if ((!strFromPort_temp.Contains("E")) || (!strFromPort_temp.Contains(_ID_mk)))
+                        {
+                            strFromPort = strFromPort_temp;
+                        }
+                    }
+                    else return;
+                    //}
+
+                }
+                catch (Exception ex)
+                {
+                   // MessageBox.Show(ex.ToString());
+                }
             }
-            catch { }
         }
         
 
@@ -131,11 +176,12 @@ namespace Com_port
                 _currentPort.Open();
 
               // Run_port();
-                System.Threading.Thread.Sleep(500);
+               // System.Threading.Thread.Sleep(500);
+                
                 // небольшая пауза, ведь SerialPort не терпит суеты
                 _currentPort.DiscardInBuffer();
                 _currentPort.Write(_ID_mk);
-                System.Threading.Thread.Sleep(200);
+                //System.Threading.Thread.Sleep(200);
                 string returnMessage = _currentPort.ReadLine();
                 strFromPort = returnMessage;
                 
@@ -153,10 +199,12 @@ namespace Com_port
                     return false;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+              //  MessageBox.Show(ex.ToString());
                 _currentPort.Close();
                 return false;
+
             }
         }
 
@@ -211,6 +259,6 @@ namespace Com_port
 
 
 
-    }
+}
 
  }

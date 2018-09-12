@@ -23,6 +23,7 @@ namespace Com_port
         public Inp_f()
         {
             InitializeComponent();
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -32,9 +33,14 @@ namespace Com_port
             {
 
                 PortEr.Ini();
-                PortEr.Find_port(ID_mk);
-                textBox1.Text = PortEr.strFromPort;
 
+
+                
+
+                PortEr.Find_port(ID_mk);
+
+                textBox1.Text = PortEr.strFromPort;
+                progressBar1.Value = 100;
             }
             catch { }
 
@@ -46,19 +52,21 @@ namespace Com_port
             }
             else
             {
+
                 this.Hide();
                 Form1 frm1 = new Form1();
                 frm1.ShowDialog();
-                
-               // Application.Run(new Form1());
-                
+                Application.Exit();
+                //this.Close();
+                // Application.Run(new Form1());
+
             }
 
         }
        
         private void Window_Closing(object sender, EventArgs e)
         {
-          
+            this.Close();
         }
 
     }

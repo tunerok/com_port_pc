@@ -15,6 +15,8 @@ namespace Com_port
     public partial class Form1 : Form
     {
         private delegate void InvokeDelegate();
+        public delegate void DisplayHandler();
+
         System.Timers.Timer aTimer;
         PointF[] points = new PointF[614];
         String S = "";
@@ -25,17 +27,21 @@ namespace Com_port
         int conn_counter = 0;
         bool connect = true;
         bool paused = false;
-        Pen pen = new Pen(Color.Green);
+        Pen pen = new Pen(Color.Black);
+        Pen pen_lvl = new Pen(Color.Red);
         SolidBrush fig = new SolidBrush(Color.White);
+        float graph_maxy, graph_miny;
+        DisplayHandler handler;
+
+
         public Form1()
         {
             InitializeComponent();
+            textBox2.Text = PortEr._ID_mk;
             label2.Text = PortEr._port_finded;//выводим номер порта
-            
             PortEr.Run_port();
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);//сразу объявим картинку как графику ,чтобы упростить с ней взаимодействие
             g = Graphics.FromImage(b);
-            //g = pictureBox1.CreateGraphics();
             for (int i = 0; i < 614; i++)
             {//инициализируем нужные нам точки 
                 points[i].X = i;
@@ -43,6 +49,8 @@ namespace Com_port
             }
             g.FillRectangle(fig, 0, 0, pictureBox1.Width, pictureBox1.Height);
             Max_voltage = Convert.ToDouble(textBox1.Text);
+            handler = new DisplayHandler(updateImageBox);
+            My_txt_Writer.Ini_file_writer();
             Main();
         }
 
@@ -64,7 +72,18 @@ namespace Com_port
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)//Само событие просто считывает значение переменной, которая была забита из класса управления портом - синглтоном
         {
-
+            if (checkBox5.Checked)//inversion
+            {
+                pen.Color = Color.Green;
+                //pen_lvl.Color = Color.Blue;
+                fig.Color = Color.Black; 
+            }
+            else
+            {
+                pen.Color = Color.Black;
+               //pen_lvl.Color = Color.Red;
+                fig.Color = Color.White;
+            }
             conn_counter = conn_counter + 1;
             if (conn_counter > 300)
             {
@@ -73,22 +92,34 @@ namespace Com_port
               //  System.Threading.Thread.Sleep(2000);
                 conn_counter = 0;
             }
-
-            if (connect)
+            try
             {
-                BeginInvoke(new InvokeDelegate(updateImageBox));
-                S = PortEr.strFromPort;
-                button4.BeginInvoke((Action)delegate () { button4.Enabled = false; });
-                ThreadHelperClass.SetText(this, label6, S); //PortEr._port_finded);
+                if (connect)
+                {
+
+                    //BeginInvoke(new InvokeDelegate(updateImageBox));
+                    
+                    handler.Invoke();
+
+
+                    S = PortEr.strFromPort;
+                    My_txt_Writer.Append_to_file(S);
+                    //button4.BeginInvoke((Action)delegate () { button4.Enabled = false; });
+
+                    ThreadHelperClass.SetText(this, label6, S); //PortEr._port_finded);
+                }
+                else
+                {
+                    ThreadHelperClass.SetText(this, label6, "Не найдено");
+                    //button4.BeginInvoke((Action)delegate () { button4.Enabled = true; });
+
+                }
             }
-            else
-            {
-                ThreadHelperClass.SetText(this, label6, "Не найдено");
-                button4.BeginInvoke((Action)delegate () { button4.Enabled = true; }); 
-
+            catch(Exception ex) {
+                MessageBox.Show(ex.ToString());
             }
 
-
+            
 
             //throw new NotImplementedException();
         }
@@ -98,6 +129,8 @@ namespace Com_port
             try
             {
                 current_inp = Convert.ToDouble(S);
+                graph_miny = (float)Max_voltage;
+                graph_maxy = 1;
                 Drawer_my(current_inp, Max_voltage);
             }
             catch { }
@@ -121,7 +154,8 @@ namespace Com_port
         //в правую часть. Принимает на вход две переменных - полученное значение с АЦП МК и заданное пользователем или дефолтное опорное наряжение
         private void Drawer_my(double r, double v)
         {
-            g.Clear(Color.White);
+
+            g.Clear(fig.Color);
             double t_inp;
             int i = 0;
 
@@ -139,43 +173,24 @@ namespace Com_port
 
 
 
-            for (; i < 613; i++)//перебираем все элементы, кроме самого последнего 
+            for (; i < 613; i++)
+            {//перебираем все элементы, кроме самого последнего 
                 points[i].Y = points[i + 1].Y; // оперируем только  с элементами оординат, т.к. абсцисса "виртуальная и не едет"
-
+                if (points[i].Y > graph_maxy)
+                    graph_maxy = points[i].Y;
+                if (points[i].Y < graph_miny)
+                    graph_miny = points[i].Y;
+            }
             points[613].Y = (float)t_inp;
 
-
+            g.DrawLines(pen, points);
             //g.DrawCurve(pen, points);
 
+            if (checkBox3.Checked)//min
+                g.DrawLine(pen_lvl, 1, graph_maxy, 613, graph_maxy);
 
-           // Pen redPen = new Pen(Color.Red, 3);
-           // Pen greenPen = new Pen(Color.Green, 3);
-
-            // Create points that define curve.
-           // Point point1 = new Point(0, 0);
-           // Point point2 = new Point(100, 250);
-          //  Point point3 = new Point(200, 5);
-          //  Point point4 = new Point(250, 50);
-          //  Point point5 = new Point(300, 100);
-         //   Point point6 = new Point(350, 200);
-          //  Point point7 = new Point(250, 250);
-          //  Point[] curvePoints = { point1, point2};
-
-            // Draw lines between original points to screen.
-         //   g.DrawLines(pen, points);
-            g.DrawCurve(pen, points);
-
-
-
-
-
-
-
-
-
-
-            //pictureBox1.Image = (Image)b;
-            //pictureBox1.Refresh();
+            if (checkBox1.Checked)//max
+                g.DrawLine(pen_lvl, 1, graph_miny, 613, graph_miny);
             pictureBox1.Image = b;//выбрать между функциями
         }
 
@@ -188,7 +203,10 @@ namespace Com_port
                 PortEr.Find_port(ID_mk);
 
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
 
             if (PortEr.MkPortFound == false)
             {
@@ -216,5 +234,19 @@ namespace Com_port
                 paused = !paused;
             }
         }
+
+        
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            aTimer.Stop();
+            My_txt_Writer.Close_file();
+            PortEr.Close_port();
+            
+            //Application.Exit();
+            this.Close();
+        }
+
+        
     }
 }
