@@ -63,14 +63,14 @@ namespace Com_port
         void Main()
         {
            
-                aTimer = new System.Timers.Timer(50);//тут у нас второй таймер, достаточно медленный(1 сек), чтобы не задушить порт. Опять же хз насколько быстро нужно считывать с буфера FIFO порта
+                aTimer = new System.Timers.Timer(50);//тут у нас второй таймер, для отрисовки и чека порта
                 aTimer.Elapsed += OnTimedEvent;//вызываем событие по "прерыванию"
                 aTimer.AutoReset = true;//авторестарт
                 aTimer.Enabled = true;
             
         }
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e)//Само событие просто считывает значение переменной, которая была забита из класса управления портом - синглтоном
+        private void OnTimedEvent(object sender, ElapsedEventArgs e)//Само событие просто считывает значение переменной, которая была забита из класса управления портом
         {
             if (checkBox5.Checked)//inversion
             {
@@ -99,14 +99,17 @@ namespace Com_port
 
                     //BeginInvoke(new InvokeDelegate(updateImageBox));
                     
+					
+					
                     handler.Invoke();
-
-
-                    S = PortEr.strFromPort;
-                    My_txt_Writer.Append_to_file(S);
-                    //button4.BeginInvoke((Action)delegate () { button4.Enabled = false; });
-
-                    ThreadHelperClass.SetText(this, label6, S); //PortEr._port_finded);
+					if (PortEr.isChanged){
+						PortEr.isChanged = false;
+						S = PortEr.strFromPort;
+						My_txt_Writer.Append_to_file(S);
+						//button4.BeginInvoke((Action)delegate () { button4.Enabled = false; });
+						
+						ThreadHelperClass.SetText(this, label6, S); //PortEr._port_finded);
+					}
                 }
                 else
                 {

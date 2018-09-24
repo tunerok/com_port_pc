@@ -24,8 +24,8 @@ namespace Com_port
         public static System.Timers.Timer aTimer;
         private static Thread readThread = new Thread(Read);
         public static int check_current_port;
+		public static bool isChanged;
         private PortEr() { }
-
         public static void Ini()
         {
             strFromPort = "";
@@ -92,6 +92,7 @@ namespace Com_port
 
         public static void Run_port()
         {
+			isChanged = bool;
             _currentPort.BaudRate = 9600;
             _currentPort.DtrEnable = true;
             _currentPort.ReadTimeout = 2000;
@@ -141,6 +142,7 @@ namespace Com_port
                         string strFromPort_temp = _currentPort.ReadLine();
                         if ((!strFromPort_temp.Contains("E")) || (!strFromPort_temp.Contains(_ID_mk)))
                         {
+							isChanged = true;
                             strFromPort = strFromPort_temp;
                         }
                     }
