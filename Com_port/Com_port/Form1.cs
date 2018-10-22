@@ -36,19 +36,22 @@ namespace Com_port
 
         public Form1()
         {
+
             InitializeComponent();
             textBox2.Text = PortEr._ID_mk;
             label2.Text = PortEr._port_finded;//выводим номер порта
+            S = "0";
             PortEr.Run_port();
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);//сразу объявим картинку как графику ,чтобы упростить с ней взаимодействие
             g = Graphics.FromImage(b);
+            Max_voltage = Convert.ToDouble(textBox1.Text);
             for (int i = 0; i < 614; i++)
             {//инициализируем нужные нам точки 
                 points[i].X = i;
-                points[i].Y = 0;
+                points[i].Y = (float)Max_voltage/2;
             }
             g.FillRectangle(fig, 0, 0, pictureBox1.Width, pictureBox1.Height);
-            Max_voltage = Convert.ToDouble(textBox1.Text);
+            
             handler = new DisplayHandler(updateImageBox);
             My_txt_Writer.Ini_file_writer();
             Main();
@@ -67,6 +70,7 @@ namespace Com_port
                 aTimer.Elapsed += OnTimedEvent;//вызываем событие по "прерыванию"
                 aTimer.AutoReset = true;//авторестарт
                 aTimer.Enabled = true;
+            
             
         }
 
@@ -146,6 +150,11 @@ namespace Com_port
             Max_voltage = Convert.ToDouble(textBox1.Text);//считываем опорное напряжение
         }
 
+
+        private void speed_changed(object sender, EventArgs e)
+        {
+            aTimer.Interval = 50d / (double)numericUpDown1.Value;
+        }
 
         private void Drawer_ini()
         {

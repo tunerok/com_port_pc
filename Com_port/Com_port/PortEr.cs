@@ -22,7 +22,7 @@ namespace Com_port
         public static bool MkPortFound;
         public static string[] ports;
         public static System.Timers.Timer aTimer;
-        private static Thread readThread = new Thread(Read);
+        private static Thread readThread  = new Thread(Read);
         public static int check_current_port;
 		public static bool isChanged;
         private PortEr() { }
@@ -66,7 +66,7 @@ namespace Com_port
                     _currentPort = new SerialPort(port, 9600);//каждый открываем
                     _currentPort.DtrEnable = true;
                     _currentPort.ReadTimeout = 2000;
-                    _currentPort.WriteTimeout = 500;
+                   // _currentPort.WriteTimeout = 500;
                     bool det = MkDetected();
                     if (det)// и слушаем
                     {
@@ -92,14 +92,17 @@ namespace Com_port
 
         public static void Run_port()
         {
-			isChanged = bool;
+
+			isChanged = false;
             _currentPort.BaudRate = 9600;
-            _currentPort.DtrEnable = true;
+            //_currentPort.DtrEnable = true;
             _currentPort.ReadTimeout = 2000;
+
 
             try
             {
                 _currentPort.Open();
+                
             }
             catch (Exception ex)
             {
@@ -176,15 +179,16 @@ namespace Com_port
             try
             {
                 _currentPort.Open();
-
+                string returnMessage;
               // Run_port();
-               // System.Threading.Thread.Sleep(500);
+                System.Threading.Thread.Sleep(500);
+                returnMessage = _currentPort.ReadLine();
                 
-                // небольшая пауза, ведь SerialPort не терпит суеты
-                _currentPort.DiscardInBuffer();
-                _currentPort.Write(_ID_mk);
-                //System.Threading.Thread.Sleep(200);
-                string returnMessage = _currentPort.ReadLine();
+                 
+                // _currentPort.Write(_ID_mk);
+                _currentPort.WriteLine(_ID_mk);
+                System.Threading.Thread.Sleep(10);
+                returnMessage = _currentPort.ReadLine();
                 strFromPort = returnMessage;
                 
                 // необходимо чтобы void loop() в скетче содержал код c ID;
