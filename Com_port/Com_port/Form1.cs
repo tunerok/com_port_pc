@@ -34,6 +34,8 @@ namespace Com_port
         DisplayHandler handler;
         int writer_counter = 800;
         int cycle_counter = 0;
+        double res = 0.0;
+        double r = 0.051;
 
         public Form1()
         {
@@ -120,10 +122,11 @@ namespace Com_port
                         }
 
                         S = PortEr.strFromPort;
-						My_txt_Writer.Append_to_file(S);
+                        res = Int32.Parse(S) * r;
+						My_txt_Writer.Append_to_file(res.ToString());
 						//button4.BeginInvoke((Action)delegate () { button4.Enabled = false; });
 						
-						ThreadHelperClass.SetText(this, label6, S); //PortEr._port_finded);
+						ThreadHelperClass.SetText(this, label6, res.ToString()); //PortEr._port_finded);
 					}
                 }
                 else
