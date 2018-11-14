@@ -25,8 +25,11 @@ namespace Com_port
         private static Thread readThread  = new Thread(Read);
         public static int check_current_port;
 		public static bool isChanged;
+        //public static string port;
         private PortEr() { }
         public static void Ini()
+        
+
         {
             strFromPort = "";
             Get_ports();
@@ -92,30 +95,33 @@ namespace Com_port
 
         public static void Run_port()
         {
-
-			isChanged = false;
+            _currentPort = new SerialPort(_port_finded, 9600); // new
+            PortEr.MkPortFound = true;//new
+            isChanged = false;
+            _currentPort.DtrEnable = true;
             _currentPort.BaudRate = 9600;
             //_currentPort.DtrEnable = true;
             _currentPort.ReadTimeout = 2000;
-
+            
 
             try
             {
                 _currentPort.Open();
-                
+                System.Threading.Thread.Sleep(1000);
+                _currentPort.DiscardInBuffer();
+                readThread.Start();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
-
+            
 
             //aTimer = new System.Timers.Timer(200);
             //aTimer.Elapsed += OnTimedEvent;
             //aTimer.AutoReset = true;
             //aTimer.Enabled = true;
-            _currentPort.DiscardInBuffer();
-            readThread.Start();
+            
 
 
         }
@@ -182,7 +188,7 @@ namespace Com_port
                 string returnMessage;
               // Run_port();
                 System.Threading.Thread.Sleep(500);
-                returnMessage = _currentPort.ReadLine();
+               // returnMessage = _currentPort.ReadLine();
                 
                  
                 // _currentPort.Write(_ID_mk);

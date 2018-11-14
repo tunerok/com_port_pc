@@ -32,7 +32,8 @@ namespace Com_port
         SolidBrush fig = new SolidBrush(Color.White);
         float graph_maxy, graph_miny;
         DisplayHandler handler;
-
+        int writer_counter = 800;
+        int cycle_counter = 0;
 
         public Form1()
         {
@@ -41,7 +42,7 @@ namespace Com_port
             textBox2.Text = PortEr._ID_mk;
             label2.Text = PortEr._port_finded;//выводим номер порта
             S = "0";
-            PortEr.Run_port();
+           // PortEr.Run_port();
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);//сразу объявим картинку как графику ,чтобы упростить с ней взаимодействие
             g = Graphics.FromImage(b);
             Max_voltage = Convert.ToDouble(textBox1.Text);
@@ -89,7 +90,7 @@ namespace Com_port
                 fig.Color = Color.White;
             }
             conn_counter = conn_counter + 1;
-            if (conn_counter > 300)
+            if (conn_counter > 20)
             {
 
                // connect = PortEr.Check_connection();
@@ -103,12 +104,22 @@ namespace Com_port
 
                     //BeginInvoke(new InvokeDelegate(updateImageBox));
                     
+
+                    
 					
 					
                     handler.Invoke();
 					if (PortEr.isChanged){
 						PortEr.isChanged = false;
-						S = PortEr.strFromPort;
+                        cycle_counter++;
+                        if (cycle_counter > writer_counter)
+                        {
+                            My_txt_Writer.Close_file();
+                            My_txt_Writer.Ini_file_writer();
+                            cycle_counter = 0;
+                        }
+
+                        S = PortEr.strFromPort;
 						My_txt_Writer.Append_to_file(S);
 						//button4.BeginInvoke((Action)delegate () { button4.Enabled = false; });
 						

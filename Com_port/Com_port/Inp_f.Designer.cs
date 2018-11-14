@@ -76,7 +76,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(157, 20);
             this.textBox1.TabIndex = 4;
-            this.textBox1.Text = "Q";
+            this.textBox1.Text = "COM1";
             // 
             // Inp_f
             // 

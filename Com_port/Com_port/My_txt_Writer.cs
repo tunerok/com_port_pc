@@ -21,7 +21,7 @@ namespace Com_port
         {
             try
             {
-                sw.Write(line);
+                sw.Write(line + "\n");
             }
             catch (Exception ex)
             {

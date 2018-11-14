@@ -32,22 +32,19 @@ namespace Com_port
             try
             {
 
-                PortEr.Ini();
 
 
-                
+                PortEr._port_finded = ID_mk;
+                PortEr.Run_port();
 
-                PortEr.Find_port(ID_mk);
-
-                textBox1.Text = PortEr.strFromPort;
                 progressBar1.Value = 100;
             }
             catch { }
 
             if (PortEr.MkPortFound == false)
             {
-                // textBox1.Text = "Не найдено";
-                
+                textBox1.Text = "COM";
+                progressBar1.Value = 44;
                 return;
             }
             else
